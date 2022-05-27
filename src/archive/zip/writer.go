@@ -15,6 +15,11 @@ import (
 	"unicode/utf8"
 )
 
+// ErrWriteToDirectory means that the entry of a directory itself contains
+// data. Only file entries can contain data. The files inside a directory are
+// separate entries from the directory.
+var ErrWriteToDirectory = errors.New("zip: write to directory")
+
 var (
 	errLongName  = errors.New("zip: FileHeader.Name too long")
 	errLongExtra = errors.New("zip: FileHeader.Extra too long")
@@ -509,7 +514,7 @@ func (dirWriter) Write(b []byte) (int, error) {
 	if len(b) == 0 {
 		return 0, nil
 	}
-	return 0, errors.New("zip: write to directory")
+	return 0, ErrWriteToDirectory
 }
 
 type fileWriter struct {
