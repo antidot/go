@@ -20,6 +20,10 @@ import (
 	"time"
 )
 
+// ErrFileTooLarge means the file resulting from decompression is larger than
+// is specified in the file header
+var ErrFileTooLarge = errors.New("zip: decompressed file larger than specified")
+
 var (
 	ErrFormat    = errors.New("zip: not a valid zip file")
 	ErrAlgorithm = errors.New("zip: unsupported compression algorithm")
@@ -235,7 +239,7 @@ func (r *checksumReader) Read(b []byte) (n int, err error) {
 	r.hash.Write(b[:n])
 	r.nread += uint64(n)
 	if r.nread > r.f.UncompressedSize64 {
-		return 0, ErrFormat
+		return 0, ErrFileTooLarge
 	}
 	if err == nil {
 		return
